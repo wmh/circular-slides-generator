@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Circular Slides Generator - impress.js</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap.min.css">
+<link href='http://fonts.googleapis.com/css?family=Amaranth:400,700' rel='stylesheet' type='text/css'>
+<style>
+body {
+  background-image: url(//wmh.github.io/circular-slides-generator/static/img/noise.png);
+}
+h1 {
+  font-size: 82px;
+  font-family: 'Amaranth', sans-serif;
+  text-shadow: 0px 3px 3px #666;
+  margin-top: 0;
+}
+h2 {
+  font-family: 'Amaranth', sans-serif;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Circular Slides Generator</h1>
+  <p class="lead">Generates circular slides for impress.js presentations.</p>
+  <form class="form-horizontal" role="form">
+    <div class="form-group">
+      <label for="pages" class="col-md-2 control-label">How Many Slides</label>
+      <div class="col-md-2">
+        <input type="text" class="form-control" id="pages" value="10">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="origin-x" class="col-md-2 control-label">Origin</label>
+      <div class="col-md-2 input-group">
+         <span class="input-group-addon">X</span>
+        <input type="text" class="form-control" id="origin-x" value="0">
+      </div>
+      <div class="col-md-2 input-group">
+        <span class="input-group-addon">Y</span>
+        <input type="text" class="form-control" id="origin-y" value="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="size-x" class="col-md-2 control-label">Slide Size</label>
+      <div class="col-md-2 input-group">
+        <span class="input-group-addon">W</span>
+        <input type="text" class="form-control" id="size-w" value="800">
+      </div>
+      <div class="col-md-2 input-group">
+        <span class="input-group-addon">H</span>
+        <input type="text" class="form-control" id="size-h" value="600">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="spacing" class="col-md-2 control-label">Slide Spacing</label>
+      <div class="col-md-2">
+        <input type="text" class="form-control" id="spacing" value="-50">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-md-2 control-label">Options</label>
+      <div class="col-md-4">
+        <div class="checkbox">
+          <input type="checkbox" checked="checked" id="credit-page">
+          <label for="credit-page">Include credit page</label>
+        </div>
+        <div class="checkbox">
+          <input type="checkbox" id="reverse">
+          <label for="reverse">Reverse (anti-clockwise)</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-md-offset-2 col-md-4">
+        <button type="submit" id="generate" class="btn btn-primary"><span class="glyphicon glyphicon-cog"></span> Generate</button>
+        <button type="submit" id="preview" class="btn btn-success"><span class="glyphicon glyphicon-play"></span> Preivew</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="codes" class="col-md-2 control-label">Codes</label>
+      <div class="col-md-10">
+        <textarea id="codes" class="form-control" rows="6"></textarea>
+      </div>
+    </div>
+  </form>
+  <div id="credits">
+    <h2>Credits</h2>
+    <ul>
+      <li>
+        <a href="http://bartaz.github.io/impress.js" target="_blank">impress.js</a> - Bartek Szopka
+      </li>
+      <li>
+        <a href="http://wmh.github.io/circular-slides-generator" target="_blank">Circular Slides Generator</a> - Hunter Wu
+      </li>
+    </ul>
+  </div>
+</div>
+<a href="https://github.com/wmh/circular-slides-generator"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+$(function () {
+  // load template
+  var template = '';
+  $.get('template.html', function (data) {
+    template = data;
+  }, 'html');
+
+  function getSlideCodes() {
+    var pages = Math.max($('#pages').val() * 1, 3),
+        originX = $('#origin-x').val() * 1,
+        originY = $('#origin-y').val() * 1,
+        sizeW = $('#size-w').val() * 1,
+        sizeH = $('#size-h').val() * 1,
+        spacing = $('#spacing').val() * 1,
+        offsetX = parseInt(originX - sizeW / 2, 10),
+        offsetY = parseInt(originY - sizeH / 2, 10),
+        c = (sizeH + spacing) * pages,
+        r = parseInt(c / 2 / Math.PI + sizeW / 2, 10),
+        overviewScale = Math.ceil((r * 2 + Math.max(sizeW, sizeH)) / Math.min(sizeW, sizeH)),
+        creditPage = $('#credit-page').is(':checked'),
+        reverse = $('#reverse').is(':checked'),
+        de = 0,
+        deStep = (reverse ? -1 : 1) * (360 / pages),
+        page, ra, x, y, codes = '';
+
+    for (page = 1; page <= pages; ++page) {
+      de = deStep * (page - 1);
+      rotate = de;
+      ra = (360 - de) * Math.PI / 180;
+      x = parseInt(offsetX + Math.cos(ra) * r, 10);
+      y = parseInt(offsetY - Math.sin(ra) * r, 10);
+      if (page < pages) {
+        codes += '<div class="step slide" data-x="'+ x +'" data-y="' + y + '" data-rotate="'+ rotate +'" data-scale="1"><q>Slide '+ page +'</q></div>' + "\n";
+      } else {
+        codes += '<div class="step slide credits" data-x="'+ x +'" data-y="' + y + '" data-rotate="'+ rotate +'" data-scale="1">'+ $('#credits').html() +'</div>' + "\n";
+      }
+    }
+    codes += '<div class="step" data-x="'+ originX +'" data-y="'+ originY +'" data-scale="'+ overviewScale +'"></div>';
+    return codes;
+  }
+
+  $('#generate').click(function (e) {
+    e.preventDefault();
+    var sizeW = $('#size-w').val() * 1,
+        sizeH = $('#size-h').val() * 1;
+    $('#codes').val(template
+        .replace('width: 800px;', 'width: '+ sizeW +'px;')
+        .replace('height: 600px;', 'height: '+ sizeH +'px;')
+        .replace('<!-- slides -->', getSlideCodes())
+    );
+  });
+
+  $('#preview').click(function (e) {
+    e.preventDefault();
+    if (window.previewWindow) {
+		  window.previewWindow.close();
+    }
+    window.previewWindow = window.open('template.html');
+    $(window.previewWindow).load(function (e) {
+      var previewDoc = window.previewWindow.document,
+          slideRule = previewDoc.styleSheets[0].cssRules[2],
+          sizeW = $('#size-w').val() * 1,
+          sizeH = $('#size-h').val() * 1;
+      slideRule.style.width = sizeW + 'px';
+      slideRule.style.height = sizeH + 'px';
+      $(previewDoc).find('#impress').html(getSlideCodes());
+      window.previewWindow.impress().init();
+    });
+  });
+
+});
+</script>
+</body>
+</html>
