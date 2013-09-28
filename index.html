@@ -125,6 +125,7 @@ $(function () {
         r = parseInt(c / 2 / Math.PI + sizeW / 2, 10),
         overviewScale = Math.ceil((r * 2 + Math.max(sizeW, sizeH)) / Math.min(sizeW, sizeH)),
         coverPage = $('#cover-page').is(':checked'),
+        coverPageScale = 1,
         creditPage = $('#credit-page').is(':checked'),
         reverse = $('#reverse').is(':checked'),
         de = 0,
@@ -132,7 +133,8 @@ $(function () {
         page, ra, x, y, codes = '';
 
     if (coverPage) {
-      codes += '<div class="step slide" data-x="'+ (originX - parseInt(sizeW / 2, 10)) +'" data-y="' + (originY - parseInt(sizeH / 2, 10)) + '" data-rotate="0" data-scale="1"><q>My Slides</q></div>' + "\n";
+      coverPageScale = r / sizeW * 0.7;
+      codes += '<div class="step slide" data-x="'+ (originX - parseInt(sizeW / 2, 10)) +'" data-y="' + (originY - parseInt(sizeH / 2, 10)) + '" data-rotate="0" data-scale="'+ coverPageScale +'"><q>My Slides</q></div>' + "\n";
     }
 
     for (page = 1; page <= pages; ++page) {
