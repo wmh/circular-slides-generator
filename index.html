@@ -63,6 +63,10 @@ h2 {
       <label class="col-md-2 control-label">Options</label>
       <div class="col-md-4">
         <div class="checkbox">
+          <input type="checkbox" checked="checked" id="cover-page">
+          <label for="cover-page">Add cover page</label>
+        </div>
+        <div class="checkbox">
           <input type="checkbox" checked="checked" id="credit-page">
           <label for="credit-page">Include credit page</label>
         </div>
@@ -120,11 +124,16 @@ $(function () {
         c = (sizeH + spacing) * pages,
         r = parseInt(c / 2 / Math.PI + sizeW / 2, 10),
         overviewScale = Math.ceil((r * 2 + Math.max(sizeW, sizeH)) / Math.min(sizeW, sizeH)),
+        coverPage = $('#cover-page').is(':checked'),
         creditPage = $('#credit-page').is(':checked'),
         reverse = $('#reverse').is(':checked'),
         de = 0,
         deStep = (reverse ? -1 : 1) * (360 / pages),
         page, ra, x, y, codes = '';
+
+    if (coverPage) {
+      codes += '<div class="step slide" data-x="'+ (originX - parseInt(sizeW / 2, 10)) +'" data-y="' + (originY - parseInt(sizeH / 2, 10)) + '" data-rotate="0" data-scale="1"><q>My Slides</q></div>' + "\n";
+    }
 
     for (page = 1; page <= pages; ++page) {
       de = deStep * (page - 1);
