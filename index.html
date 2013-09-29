@@ -133,7 +133,7 @@ $(function () {
         page, ra, x, y, codes = '';
 
     if (coverPage) {
-      coverPageScale = r / sizeW * 0.7;
+      coverPageScale = r / Math.max(sizeW, sizeH) * 0.7;
       codes += '<div class="step slide" data-x="'+ (originX - parseInt(sizeW / 2, 10)) +'" data-y="' + (originY - parseInt(sizeH / 2, 10)) + '" data-rotate="0" data-scale="'+ coverPageScale +'"><q>My Slides</q></div>' + "\n";
     }
 
