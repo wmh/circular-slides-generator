@@ -89,6 +89,10 @@ h2 {
       </div>
     </div>
   </form>
+  <div id="notice">
+    <h2>Notice</h2>
+    <p>If you want to browse this template locally from the file system, you have to save impress.js as local file too.</p>
+  </div>
   <div id="credits">
     <h2>Credits</h2>
     <ul>
@@ -167,7 +171,7 @@ $(function () {
   $('#preview').click(function (e) {
     e.preventDefault();
     if (window.previewWindow) {
-		  window.previewWindow.close();
+        window.previewWindow.close();
     }
     window.previewWindow = window.open('template.html');
     $(window.previewWindow).load(function (e) {
