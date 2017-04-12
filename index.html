@@ -164,6 +164,7 @@ $(function () {
     $('#codes').val(template
         .replace('width: 800px;', 'width: '+ sizeW +'px;')
         .replace('height: 600px;', 'height: '+ sizeH +'px;')
+	.replace('<!--impressinit-->','<script>impress().init()<\/script>')
         .replace('<!-- slides -->', getSlideCodes())
     );
   });
